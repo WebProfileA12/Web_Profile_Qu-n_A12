@@ -1,0 +1,760 @@
+/*base ------------ css*/
+*{
+  box-sizing: border-box;
+}
+html{
+  font-size: 62.5%;
+  translate: no;
+  display: block;
+  align-items: center;
+  justify-content: center;
+}
+body{
+  font-size: 16px;
+  font-family: Serif;
+  translate: no;
+  background: rgba(30,30,30,1);
+}
+/*--------------*/
+.thanh_ngang{
+  height: 55px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #c949b4;
+  background: linear-gradient(90deg,rgba(201, 73, 180, 1) 0%, rgba(29, 219, 253, 1) 50%, rgba(96, 252, 69, 1) 100%);
+}
+a{
+  text-decoration: none;
+}
+.dau_trang .body_thanh_ngang{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.nav ul{
+  display: flex;
+}
+.nav{
+  margin-left: 40px;
+}
+.nav a{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 22px;
+  font-size: 23px;
+}
+#fb{
+  color: blue;
+  margin-left: 7px;
+  margin-top: 5px
+}
+#tele{
+  color: blue;
+  margin-left: 12px;
+  margin-top: 5px
+}
+#tik_tok{
+  color: black;
+  margin-left: 12px;
+  margin-top: 5px
+}
+#call{
+  color: green;
+  margin-left: 12px;
+  margin-top: 5px;
+  
+}
+.logo{
+  border-radius: 10px;
+  margin-top: 7px;
+  margin-left: 10px
+}
+.nav a:hover{
+  color: fuchsia;
+  text-shadow: 1px 0 0 black;
+}
+.content{
+  margin-top: 20px;
+  margin-left: 5px;
+}
+.img{
+  border-radius: 7px;
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(white, white) padding-box,  /* nền bên trong */
+    linear-gradient(90deg,
+      red, orange, yellow, lime, aqua, blue, violet, red) border-box; /* viền cầu vồng */
+  animation: rainbow 5s linear infinite;
+}
+@keyframes rainbow {
+  0%   { background-position: 0% 50%, 0% 50%; }
+  50%  { background-position: 100% 50%, 100% 50%; }
+  100% { background-position: 0% 50%, 0% 50%; }
+}
+.content .body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.content .photo_block{
+  position: relative;
+  
+  
+}
+.content .content_block{
+  flex: 1;
+  margin-left: 0px;
+  display: inline;
+  
+}
+
+.content .skill{
+  position: absolute;
+  font-family: fantasy;
+  width: 150px;
+  height: 165px;
+  padding: 5px;
+  bottom: 2px;
+  right: -165px;
+  background: whitesmoke;
+  border-radius: 10px;
+  box-shadow: 0px 7px 30px 0px gray;
+}
+.skill .phu{
+  font-size: 10px;
+  font-family: Monospace;
+}
+.icon i{
+  font-size: 12px;
+}
+.photo_block .icon{
+  width: 15px;
+  height: 15px;
+  margin-top: 4px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:   linear-gradient(90deg,rgba(201, 73, 180, 1) 0%, rgba(29, 219, 253, 1) 50%, rgba(96, 252, 69, 1) 100%);
+}
+.phu .tren{
+  color: gray;
+  font-size: 10px;
+  line-height: 1.2rem;
+  font-family: fantasy;
+}
+.phu .duoi{
+  font-size: 15px;
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+}
+.content_block .thong_tin{
+  display: inline-block;
+}
+h1{
+  font-size: 20px;
+}
+.welcome{
+  margin-top: 20px;
+}
+h1 {
+  font-size: 30px;
+  text-align: center;
+  font-weight: bold;
+  background: linear-gradient(90deg, #00f, #8a2be2, #0ff, #4b0082);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  animation: galaxyMove 5s infinite linear, galaxyGlow 2s infinite ease-in-out;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.6), 
+               0 0 16px rgba(138, 43, 226, 0.6), 
+               0 0 24px rgba(75, 0, 130, 0.6);
+}
+
+@keyframes galaxyMove {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes galaxyGlow {
+  0%   { text-shadow: 0 0 6px #0ff, 0 0 12px #8a2be2, 0 0 18px #4b0082; }
+  50%  { text-shadow: 0 0 12px #00f, 0 0 24px #8a2be2, 0 0 36px #0ff; }
+  100% { text-shadow: 0 0 6px #0ff, 0 0 12px #8a2be2, 0 0 18px #4b0082; }
+}
+#name{
+  position: absolute;
+  top: 115px;
+  left: 186px;
+  font-size: 17px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #00ff00, #00bfff); /* xanh lá -> xanh biển */
+  -webkit-background-clip: text; 
+  -webkit-text-fill-color: transparent;
+  background-clip: text; 
+  color: transparent;    
+  -webkit-text-stroke: 0.5px black; 
+  text-stroke: 1px white; 
+}
+
+.dropbtn{
+  background-color: bisque;
+  border: 1px solid grey;
+  border-radius: 20px;
+  position: relative;
+  display: inline-block;
+  left: 89px;
+}
+.dropbtn:hover{
+  background-color: gray;
+  color: aliceblue;
+}
+.dropbtn_content{
+  display: none;
+  background: rgb(113,113,113);
+  position: absolute;
+  min-width: 140px;
+  min-height: 140px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 10;
+  border-radius: 20px;
+}
+.dropbtn_content a{
+  color: ;
+  padding: 12px 16px;
+  text-decoration: none;
+  margin-top: 7px;
+  align-items: center;
+  justify-content: center;
+  display: inline-block;
+}
+.btn_down:hover + .dropbtn_content{
+  display: block;
+}
+.dropbtn_content a:hover{
+  background: aquamarine;
+  color: black;
+  border-radius: 50%;
+}
+.btn_down{
+  position: relative;
+  display: inline-block;
+}
+.btn_down:focus-within .dropbtn_content {
+  display: block;
+}
+
+
+/*-----------ABOUT-----------*/
+
+
+#h1{
+  margin-top: 3px;
+  margin-left: 95px;
+}
+.dau_trang_about{
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(10px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  width: 320px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+  margin-top: 5px;
+}
+.img_about{
+  width: 90px;
+  height: 105px;
+  border-radius: 10px;
+}
+.phan_tren_about{
+  display: flex;
+}
+hr{
+  opacity: 0.2;
+  height: 0.5px;
+}
+.gthieu_about{
+  font-style: normal;
+  font-family: Monospace;
+  margin-left: 10px;
+  color: whitesmoke;
+}
+.gthieu_about .name_about{
+  font-weight: 900;
+  margin-left: 20px;
+}
+.gthieu_about .dev_about{
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 30px;            
+  padding: 3px;
+  backdrop-filter: blur(10px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: inline-block;
+  background: aliceblue;
+  color: black;
+  margin-top: 10px;
+  margin-left: 63px;
+}
+.light_about{
+  display: flex;
+  font-size: 12px;
+}
+#mui_ten_about{
+  font-size: 12px;
+}
+.light_about a{
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 30px;            
+  padding: 3px;
+  backdrop-filter: blur(10px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: inline;
+  color: whitesmoke;
+  height: 18px;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+.birth_day_about{
+  display: flex;
+  margin-top: 15px;
+}
+.map_about{
+  display: flex;
+  margin-top: 15px;
+}
+.icon_about{
+  font-size: 20px;
+  margin-top: 2px;
+}
+.year_about{
+  font-size: 12px;
+  margin-left: 5px
+}
+.dc_about{
+  font-size: 12px;
+}
+.text_map_about{
+  font-size: 5px;
+  margin-bottom: 5px;
+  opacity: 0.7;
+}
+.text_birth_about{
+  font-size: 5px;
+  margin-bottom: 5px;
+  opacity: 0.7;
+}
+.main_about{
+  margin-top: 20px;
+}
+.main_about .h2_1{
+  color: aliceblue;
+  font-size: 25px;
+  font-weight: 900;
+}
+.main_about{
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(10px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  width: 320px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+.text_content_about{
+  color: gold;
+  font-style: normal;
+  font-family: Monospace;
+  font-size: 13px;
+  margin-top: 20px;
+  font-style: normal;
+  font-family: Monospace;
+  line-height: 33px;
+  opacity: 0.7;
+  font-weight: 800;
+}
+.main_about .h2_2{
+  color: aliceblue;
+  font-size: 25px;
+  font-weight: 900;
+  margin-top: 20px;
+}
+.thiet_ke_about{
+  color: gold;
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(10px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  align-items: center;
+  justify-content: center;
+  display: block;
+  margin-top: 20px;
+  margin-left: 25px;
+  width: 230px;
+}
+.xay_dung_about{
+  color: gold;
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(10px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  align-items: center;
+  justify-content: center;
+  display: block;
+  margin-top: 20px;
+  margin-left: 25px;
+  width: 230px;
+}
+.toi_uu_about{
+  color: gold;
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(10px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  align-items: center;
+  justify-content: center;
+  display: block;
+  margin-top: 20px;
+  margin-left: 25px;
+  width: 230px;
+}
+.icon_thiet_ke_about{
+  font-size: 30px;
+  display: inline-block;
+  margin-left: 71px;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid gold; 
+}
+.icon_xay_dung_about{
+  font-size: 30px;
+  display: inline-block;
+  margin-left: 71px;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid gold; 
+}
+.icon_toi_uu_about{
+  font-size: 30px;
+  display: inline-block;
+  margin-left: 71px;
+  border-radius: 10px;
+  padding: 5px;
+  border: 1px solid gold;
+}
+.text_thiet_ke_about{
+  align-items: center;
+  justify-content: center;
+  display: block;
+  margin-left: 32px;
+  margin-top: 15px;
+}
+.text_xay_dung_about{
+  align-items: center;
+  justify-content: center;
+  display: block;
+  margin-left: 32px;
+  margin-top: 15px;
+}
+.text_toi_uu_about{
+  align-items: center;
+  justify-content: center;
+  display: block;
+  margin-left: 41px;
+  margin-top: 15px;
+}
+.note_home{
+  background: rgba(255, 255, 0, 0.1); 
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(50px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid whitesmoke; 
+  margin-top: 30px;
+  width: 320px;
+  margin-left: 20px;
+  margin-bottom: 30px;
+  color: azure;
+  line-height: 25px;
+  opacity: 0.7;
+}
+.down_cuoi_trang_about{
+  display: block;
+}
+.down_cuoi_trang_about a{
+  color: aqua;
+  display: inline-block;
+  margin-left: 170px;
+  font-size: 12px;
+  padding: 7px;
+  background: black;
+  border-radius: 20px;
+}
+.dau_dong_home{
+  color: goldenrod;
+  font-weight: 900;
+}
+.note_down_about{
+  margin-bottom: 5px;
+  color: gold;
+  display: flex;
+}
+.name_adm_home{
+  color: greenyellow;
+  font-weight: 800;
+  font-family: Monospace;
+}
+.main_about .h2_3{
+  color: aliceblue;
+  font-size: 25px;
+  font-weight: 900;
+  margin-top: 20px
+}
+.tool_about .css_about{
+  display: flex;
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(50px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 0, 0.4);
+  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 50px;
+  margin-left: 64px;
+}
+.tool_about .html_about{
+  display: flex;
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(50px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 0, 0.4);
+  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 50px;
+  margin-left: 64px;
+}
+.icon_css_about{
+  display: inline-block;
+  padding: 7px;
+  color: blue;
+  background: rgba(255, 255, 0, 1);
+  font-size: 22px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+.icon_html_about{
+  display: inline-block;
+  padding: 7px;
+  color: green;
+  background: rgba(255, 255, 0, 1);
+  font-size: 25px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+.text_css_about{
+  color: aliceblue;
+  margin-right: 10px;
+  font-style: normal;
+  font-family: Monospace;
+  font-weight: 900;
+  padding: 10px;
+  background: translate;
+  border: 1px solid blue;
+  border-radius: 20px;
+  display: inline-block;
+}
+.text_html_about{
+  color: aliceblue;
+  font-style: normal;
+  font-family: Monospace;
+  font-weight: 900;
+  padding: 10px;
+  background: translate;
+  border: 1px solid green;
+  border-radius: 20px;
+  display: inline-block;
+}  
+
+
+/*-----------PFOFILE-----------*/
+
+.main_profile{
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 15px;            
+  padding: 20px;
+  backdrop-filter: blur(10px);    
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  width: 320px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+  margin-top: 20px;
+  font-style: normal;
+  font-family: Monospace;
+}
+.school_c2_profile{
+  display: flex;
+  margin-top: 20px;
+}
+.shool_c3_profile{
+  display: flex;
+  margin-top: 20px;
+}
+.dai_hoc_profile{
+  display: flex;
+  margin-top: 20px;
+}
+.tele_profile{
+  display: flex;
+}
+.text_c2_profile .text_c2_content{
+  color: whitesmoke;
+  font-size: 13px;
+  margin-top: 20px;
+  margin-left: 24px;
+}
+.text_c3_profile .text_c3_content{
+  color: whitesmoke;
+  font-size: 13px;
+  margin-top: 20px;
+  margin-left: 24px;
+}
+.text_dai_hoc_profile .text_dai_hoc_content{
+  color: whitesmoke;
+  font-size: 13px;
+  margin-top: 20px;
+  margin-left: 24px;
+}
+.chung_nhan_c2{
+  color: rgba(0, 255, 0, 1);
+  display: flex;
+  margin-left: 30px;
+  margin-top: 10px;
+  display: inline_block;
+  padding: 5px;
+  background: rgba(0, 255, 0, 0.1);
+  border-radius: 20px;
+  border: 1px solid whitesmoke;
+}
+.chung_nhan_c3{
+  color: rgba(255, 255, 0, 1);
+  display: flex;
+  margin-left: 30px;
+  margin-top: 10px;
+  display: inline_block;
+  padding: 5px;
+  background: rgba(255, 255, 0, 0.1);
+  border-radius: 20px;
+  border: 1px solid whitesmoke;
+}
+.chung_nhan_dai_hoc{
+  color: rgba(128, 128, 128, 1);
+  display: flex;
+  margin-left: 30px;
+  margin-top: 10px;
+  display: inline_block;
+  padding: 5px;
+  background: rgba(128, 128, 128, 0.1);
+  border-radius: 20px;
+  border: 1px solid whitesmoke;
+}
+.tele_profile .text_tele_profile{
+  color: cyan;
+  margin-top:130px;
+  margin-left: 40px;
+  font-weight: 900;
+}
+.main_profile .photo{
+  border-radius: 25px;
+}
+.complete_c2{
+  font-size: 12px;
+  margin-left: 5px;
+}
+.complete_c3{
+  font-size: 12px;
+  margin-left: 5px;
+}
+.complete_dai_hoc{
+  font-size: 12px;
+  margin-left: 5px;
+}
+.text_c2_profile{
+  padding: 5px;
+  background: rgba(128, 128, 128, 0.2);
+  display: inline-block;
+  width: 140px;
+  height: 130px;
+  margin-top: 40px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px;
+  border-radius: 30px;
+  font-weight: 700;
+  border: 1px solid green;
+}
+.text_c3_profile{
+  padding: 5px;
+  background: rgba(128, 128, 128, 0.2);
+  display: inline-block;
+  width: 140px;
+  height: 130px;
+  margin-top: 40px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px;
+  border-radius: 30px;
+  font-weight: 700;
+  border: 1px solid gold;
+}
+.text_dai_hoc_profile{
+  padding: 5px;
+  background: rgba(128, 128, 128, 0.2);
+  display: inline-block;
+  width: 140px;
+  height: 130px;
+  margin-top: 40px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px;
+  border-radius: 30px;
+  font-weight: 700;
+  border: 1px solid gray;
+}
+.img_c2_profile .photo{
+  border: 2px solid green;
+}
+.img_c3_profile .photo{
+  border: 2px solid gold;
+}
+.img_dai_hoc_profile .photo{
+  border: 2px solid gray; 
+}
+.tele_profile .photo{
+  margin-top: 20px;
+  border: 2px solid cyan;
+}

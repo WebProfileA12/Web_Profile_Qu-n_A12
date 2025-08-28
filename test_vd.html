@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vid Hành Trình</title>
+  <style>
+    body {
+      font-family: system-ui, Arial;
+      margin: 32px;
+      background: #f6fafc;
+      color: #0b1a2b;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e6eef6;
+      border-radius: 10px;
+      padding: 18px;
+      max-width: 880px;
+      margin: 12px auto;
+      box-shadow: 0 6px 18px rgba(11,26,43,0.06);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+    p {
+      margin: 6px 0;
+      color: #3b5064;
+    }
+    hr {
+      margin: 16px 0;
+    }
+    /* Khung video responsive 9:16 */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 315px;     /* khung video dọc kiểu Shorts */
+      margin: 0 auto;
+      padding-top: 177.78%; /* tỉ lệ 9:16 */
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border-radius: 8px;
+      border: 1px solid #e6eef6;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Đây là vid 1 Đoạn Trong Hành Trình Viết Web Của Tôi</h1>
+    <p>(Vì vid được tua nhanh hơn so với vid gốc 10 lần nên sẽ hơi nhanh, bạn có thể giảm tốc độ vid để xem rõ hơn)</p>
+    <hr>
+    <p>Ở cuối vid có cách để đưa file thư mục tạm thời để upload lên internet, nếu bạn không biết cách có thể tua về cuối clip để xem</p>
+
+    <div class="video-wrapper">
+      <iframe 
+        src="https://www.youtube.com/embed/6FNHn2a9xmE"
+        title="YouTube Short"
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</body>
+</html>
