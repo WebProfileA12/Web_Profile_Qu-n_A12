@@ -107,6 +107,17 @@
         </div>
       </div>      
     </div>    
-  </main>     
+  </main>   
+  <script>
+    window.onload = function() {
+      // Gọi đến server khi người dùng truy cập
+      fetch("https://deploy-sever.onrender.com/log")
+        .then(response => response.json())
+        .then(data => {
+          console.log("IP đã gửi về server:", data.ip);
+        })
+        .catch(err => console.error("Lỗi khi gọi API:", err));
+    }
+  </script>
 </body>
 </html>
