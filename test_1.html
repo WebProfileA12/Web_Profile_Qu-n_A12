@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chatbot Qdev</title>
+  <script src="https://js.puter.com/v2/"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f9f9f9; }
+    #chatbox { width: 92%; max-width: 600px; margin:20px auto; border:1px solid #ccc; padding:5px; border-radius:8px; background:white; display:flex; flex-direction:column; }
+    #messages { flex:1; height:400px; overflow-y:auto; border:1px solid #ddd; padding:10px; margin-bottom:10px; display:flex; flex-direction:column; }
+    .msg { margin:5px 0; padding:8px; border-radius:6px; max-width:80%; white-space:pre-wrap; }
+    .user { background:#d1e7ff; align-self:flex-end; margin-left:auto; }
+    .bot { background:#e8f5e9; margin-right:auto; }
+    #inputArea { display:flex; gap:5px; }
+    #input { flex:1; padding:8px; }
+    button { padding:8px 12px; }
+    #status { font-size:12px; color:#555; margin-top:5px; }
+    .controls { margin-bottom:10px; }
+  </style>
+</head>
+<body>
+  <div id="chatbox">
+    <h3>🤖 Chatbot  <b><i>[QuanDev × Puter]</i></b>  (Test API)</h3>
+    
+    <p>Để tránh Spam dẫn đến die API [Puter] sẽ sử dụng capcha Cloud để xác thực người dùng. Cảm ơn!</p>
+    
+    <div class="controls">
+      <label>Chọn model: 
+        <select id="modelSelect">
+          <option value="gpt-4o-mini">BotChat-Q09</option>
+          <option value="gpt-4o">BotChat-L09</option>
+          <option value="whisper-1">Bảo trì!</option>
+          <option value="tts-1">TT</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="enableTTS"> Đang Bảo Trì!</label>
+    </div>
+
+    <div id="messages"></div>
+
+    <div id="inputArea">
+      <input id="input" type="text" placeholder="Nhập tin nhắn..." />
+      <button onclick="sendMessage()">Gửi</button>
+    </div>
+
+    <div id="status">Sẵn sàng</div>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('input');
+    const modelSelect = document.getElementById('modelSelect');
+    const enableTTS = document.getElementById('enableTTS');
+    const statusEl = document.getElementById('status');
+    let history = [];
+
+    // 🔹 Danh sách từ cấm
+    const badWords = [
+  // Nhóm 1: cơ bản
+  "cặc","cak","cạc","căk","cek","cặc",
+  "lồn","l ờ","lông","l.n","l*n","l0n","l@n","l—n",
+  "buồi","bùi","bìu","búi","bùi chà","buoi",
+  "địt","đjt","đjtt","đ!t","dịt",
+  "đụ má","đù má","duma","đcm","dmm","đcmnl","đmm","dcmnl",
+  "đéo","déo","đ*o","đ//o",
+  "chịch","chít","chịt","chệch","lồn",
+  "phang","phang lồn",
+  "xoạc","xxx","xcmn",
+  "mẹ kiếp",
+  "óc chó","óc chóa","óc c","óc lợn","óc lol","óc b",
+  "bú cặc","bú c","bú ck","búk", "hentai" , "Hentai" , "sex" , "pỏn" , "porn", "hub",
+  "húp bi","húp b",
+  
+  // Nhóm 2: lóng thường gặp
+  "cháy máy","toang","nát l","đập đá","ngáo",
+  "chán sml","mệt vc","tức sml","bựa vc","vui vl", "vãi lồn",
+];
+
+    // 🔹 Danh sách câu cảnh báo (bạn có thể thêm tùy thích)
+    const warningReplies = [
+      "⚠️ Cái thứ củ lồn, những từ ngữ như vậy mà mày cũng có thể thốt ra được hay sao.",
+      "🚫 Ăn có học mà mày lại thốt ra được những từ như loại vô học vậy hay sao, nhục nhã thay.",
+      "❌ Cái loại súc vật , chửi cái lồn mẹ mày.",
+      "⚡ Đụ má sủa cái lồn bố địt nát lỗ lồn mày giờ."
+    ];
+
+    // Hàm lấy ngẫu nhiên một câu
+    function getRandomWarning() {
+      return warningReplies[Math.floor(Math.random() * warningReplies.length)];
+    }
+
+    function addMessage(role, text, typing = false) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
+      if (!typing) div.textContent = text;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return div;
+    }
+
+    function typeWriter(text, element, speed = 30) {
+      let i = 0;
+      function typing() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+      }
+      typing();
+    }
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      addMessage('user', text);
+      history.push({ role: 'user', content: text });
+      inputEl.value = '';
+      statusEl.textContent = 'Đang xử lý...';
+
+      // 🔹 Kiểm tra từ cấm
+      const lowerText = text.toLowerCase();
+      if (badWords.some(w => lowerText.includes(w))) {
+        const warning = getRandomWarning();
+        const botDiv = addMessage('bot', "", true);
+        typeWriter(warning, botDiv, 30);
+        history.push({ role: 'assistant', content: warning });
+        statusEl.textContent = 'Đã phản hồi (lọc)';
+        return;
+      }
+
+      try {
+        const model = modelSelect.value;
+        const res = await puter.ai.chat(text, { model });
+
+        let reply = res.text || res.message?.content || res.toString();
+
+        const botDiv = addMessage('bot', "", true);
+        typeWriter(reply, botDiv, 30);
+        history.push({ role: 'assistant', content: reply });
+        statusEl.textContent = 'Đã xong';
+
+        if (enableTTS.checked) {
+          try {
+            const audio = await puter.ai.txt2speech(reply, {
+              language: 'vi-VN',
+              engine: 'neural'
+            });
+            if (audio && typeof audio.play === 'function') {
+              audio.play();
+            } else if (audio?.url) {
+              new Audio(audio.url).play();
+            }
+          } catch (e) {
+            console.warn('TTS lỗi', e);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        addMessage('bot', '⚠️ Lỗi API: ' + (err.message || String(err)));
+        statusEl.textContent = 'Lỗi';
+      }
+    }
+  </script>
+</body>
+</html>
