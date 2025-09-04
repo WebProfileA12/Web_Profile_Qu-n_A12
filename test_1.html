@@ -138,7 +138,7 @@
       const text = inputEl.value.trim();
      
       if (!text) return;
-      sendToTelegram("👤 User hỏi: " + text);
+      sendToTelegram("👤 Hỏi: " + text);
       addMessage('user', text);
       history.push({ role: 'user', content: text });
       inputEl.value = '';
@@ -154,37 +154,77 @@
         statusEl.textContent = 'Đã phản hồi (lọc)';
         return;
       }
+// 🔹 Kiểm tra câu hỏi về "ai tạo ra bạn"
+      const creatorQuestions = [
+        "ai tạo ra bạn",
+        "ai là người tạo ra bạn",
+        "ai làm ra bạn",
+        "người tạo ra bạn",
+        "ai code bạn",
+        "ai viết ra bạn",
 
-      try {
-        const model = modelSelect.value;
-        const res = await puter.ai.chat(text, { model });
+        "ai tạo ra m",
+        "ai là người tạo ra m",
+        "ai làm ra m",
+        "người tạo ra m",
+        "ai code m",
+        "ai viết ra m",
 
-        let reply = res.text || res.message?.content || res.toString();
+        "ai tạo ra mày",
+        "ai là người tạo ra mày",
+        "ai làm ra mày",
+        "người tạo ra mày",
+        "ai code mày",
+        "ai viết ra mày",
 
+        "tạo ra bạn",
+        "tạo ra",
+        "làm ra",
+        "code ra",
+        "viết ra mày",
+        "code mày",
+      ];
+
+      if (creatorQuestions.some(q => lowerText.includes(q))) {
+        const reply = "[QDev × puter] như tiêu đề. Tôi được tạo ra dựa trên các model Open AI có từ các phiên bản cũ nhưng tối ưu hơn!";
         const botDiv = addMessage('bot', "", true);
         typeWriter(reply, botDiv, 30);
         history.push({ role: 'assistant', content: reply });
-        statusEl.textContent = 'Đã xong';
+        statusEl.textContent = 'Đã phản hồi';
+        return;
+      }
+      
+      try {
+            const model = modelSelect.value;
+            const res = await puter.ai.chat(text, { model });
 
-        if (enableTTS.checked) {
-          try {
-            const audio = await puter.ai.txt2speech(reply, {
-              language: 'vi-VN',
-              engine: 'neural'
-            });
-            if (audio && typeof audio.play === 'function') {
-              audio.play();
-            } else if (audio?.url) {
-              new Audio(audio.url).play();
+            let reply = res.text || res.message?.content || res.toString();
+
+            const botDiv = addMessage('bot', "", true);
+            typeWriter(reply, botDiv, 30);
+            history.push({ role: 'assistant', content: reply });
+            statusEl.textContent = 'Đã xong';
+
+            if (enableTTS.checked) {
+                  try {
+                        const audio = await puter.ai.txt2speech(reply, {
+                              language: 'vi-VN',
+                              engine: 'neural'
+                        });
+                        if (audio && typeof audio.play === 'function') {
+                              audio.play();
+                        } else if (audio?.url) {
+                              new Audio(audio.url).play();
+                        }
+                  } catch (e) {
+                        console.warn('TTS lỗi', e);
+                  }
             }
-          } catch (e) {
-            console.warn('TTS lỗi', e);
-          }
-        }
+
       } catch (err) {
-        console.error(err);
-        addMessage('bot', '⚠️ Lỗi API: ' + (err.message || String(err)));
-        statusEl.textContent = 'Lỗi';
+            console.error(err);
+            addMessage('bot', '⚠️ Lỗi API: ' + (err.message || String(err)));
+            statusEl.textContent = 'Lỗi';
       }
     }
   </script>
