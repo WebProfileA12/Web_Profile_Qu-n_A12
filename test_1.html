@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Chatbot Qdev</title>
   <script src="https://js.puter.com/v2/"></script>
   <style>
@@ -22,9 +22,7 @@
 <body>
   <div id="chatbox">
     <h3>🤖 Chatbot  <b><i>[QuanDev × Puter]</i></b> (Test API)</h3>
-    
     <p>Chủ động đổi model khi phải chờ quá lâu</p>
-    
     
     <div class="controls">
       <label>Chọn model: 
@@ -35,7 +33,7 @@
           <option value="tts-1">Bảo trì</option>
         </select>
       </label>
-      <label><input type="checkbox" id="enableTTS">Auto Fix </label>
+      <label><input type="checkbox" id="enableTTS"> </label>
     </div>
 
     <div id="messages"></div>
@@ -47,6 +45,7 @@
 
     <div id="status">Sẵn sàng</div>
   </div>
+  <div id="limitArea" style="margin-top:10px;"></div>
 
   <script>
     const messagesEl = document.getElementById('messages');
@@ -54,47 +53,31 @@
     const modelSelect = document.getElementById('modelSelect');
     const enableTTS = document.getElementById('enableTTS');
     const statusEl = document.getElementById('status');
-    let history = [];
+    const limitArea = document.getElementById('limitArea');
 
-    // 🔹 Token và Chat ID Telegram
-    const BOT_TOKEN = "8251203012:AAEVNjXSKfZXc8ewLZQ3pIHDNtcP_JdL40Q";
-    const CHAT_ID = "7239343492";
+    let history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    let messageCount = parseInt(localStorage.getItem("messageCount")) || 0;
+    const MAX_MESSAGES = 10;
+    const BLOCK_TIME = 5 * 60 * 1000; // 5 phút
+    let blocked = false;
+    let countdownInterval;
 
-    // 🔹 Hàm gửi tin nhắn về Telegram
+    // 🔹 Telegram config
+    const BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
+    const CHAT_ID = "YOUR_CHAT_ID";
+
     async function sendToTelegram(msg) {
-          try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                            chat_id: CHAT_ID,
-                            text: msg
-                      })
-                });
-          } catch (e) {
-                console.error("Lỗi gửi Telegram:", e);
-          }
+      try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+        });
+      } catch (e) { console.error("Lỗi gửi Telegram:", e); }
     }
 
     // 🔹 Danh sách từ cấm
-    const badWords = [
-      "cặc","cak","cạc","căk","cek","cặc",
-      "lồn","l ờ","lông","l.n","l*n","l0n","l@n","l—n",
-      "buồi","bùi","bìu","búi","bùi chà","buoi",
-      "địt","đjt","đjtt","đ!t","dịt",
-      "đụ má","đù má","duma","đcm","dmm","đcmnl","đmm","dcmnl","vl",
-      "đéo","déo","đ*o","đ//o","vcl","vcc","con chó",
-      "chịch","chít","chịt","chệch","lồn",
-      "phang","phang lồn",
-      "xoạc","xxx","xcmn","cút","câm",
-      "mẹ kiếp",
-      "óc chó","óc chóa","óc c","óc lợn","óc lol","óc b",
-      "bú cặc","bú c","bú ck","búk","hentai","sex","pỏn","porn","hub",
-      "húp bi","húp b",
-      "cháy máy","toang","nát l","đập đá","ngáo",
-      "chán sml","mệt vc","tức sml","bựa vc","vui vl","vãi lồn",
-    ];
-
+    const badWords = ["súc vật","rác","mẹ mày","đụ","vl","cặc","cak","cạc","lồn","buồi","địt","đụ má","đéo","vcl","con chó","chịch","phang","xoạc","xxx","cút","óc chó","bú cặc","hentai","sex","porn"];
     const warningReplies = [
       "⚠️ Cái thứ củ lồn, những từ ngữ như vậy mà mày cũng có thể thốt ra được hay sao.",
       "🚫 Ăn có học mà mày lại thốt ra được những từ như loại vô học vậy hay sao, nhục nhã thay.",
@@ -103,11 +86,20 @@
       "❌ Cái mả cụ nhà mày, thứ lồn.",
       "❌ Địt con mẹ nhà mày, hãy sống vì 1 xã hội văn minh đi.",
     ];
-
     function getRandomWarning() {
       return warningReplies[Math.floor(Math.random() * warningReplies.length)];
     }
 
+    // 🔹 Hiển thị chat cũ khi load lại
+    function renderHistory() {
+      messagesEl.innerHTML = "";
+      history.forEach(msg => {
+        addMessage(msg.role, msg.content);
+      });
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // 🔹 Hàm hiển thị tin nhắn
     function addMessage(role, text, typing = false) {
       const div = document.createElement('div');
       div.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
@@ -130,100 +122,136 @@
       typing();
     }
 
-    async function sendMessage() {
-          const text = inputEl.value.trim();
-          if (!text) return;
-          sendToTelegram("👤: " + text);
-          addMessage('user', text);
-          history.push({ role: 'user', content: text });
-          inputEl.value = '';
-          statusEl.textContent = 'Đang xử lý...';
-
-          // 🔹 Kiểm tra từ cấm
-          const lowerText = text.toLowerCase();
-          if (badWords.some(w => lowerText.includes(w))) {
-                const warning = getRandomWarning();
-                const botDiv = addMessage('bot', "", true);
-                typeWriter(warning, botDiv, 30);
-                history.push({ role: 'assistant', content: warning });
-                statusEl.textContent = 'Đã phản hồi';
-                return;
-          }
-
-          // 🔹 Kiểm tra câu hỏi về "ai tạo ra bạn"
-          const creatorQuestions = [
-                "ai tạo ra bạn",
-                "ai là người tạo ra bạn",
-                "ai làm ra bạn",
-                "người tạo ra bạn",
-                "ai code bạn",
-                "ai viết ra bạn",
-                "ai tạo ra m",
-                "ai là người tạo ra m",
-                "ai làm ra m",
-                "người tạo ra m",
-                "ai code m",
-                "ai viết ra m",
-                "ai tạo ra mày",
-                "ai là người tạo ra mày",
-                "ai làm ra mày",
-                "người tạo ra mày",
-                "ai code mày",
-                "ai viết ra mày",
-                "tạo ra bạn",
-                "tạo ra",
-                "làm ra",
-                "code ra",
-                "viết ra mày",
-                "code mày",
-          ];
-
-          if (creatorQuestions.some(q => lowerText.includes(q))) {
-                const reply = "[QDev × puter] như tiêu đề. Tôi được tạo ra dựa trên các model Open AI có từ các phiên bản cũ nhưng tối ưu hơn!";
-                const botDiv = addMessage('bot', "", true);
-                typeWriter(reply, botDiv, 30);
-                history.push({ role: 'assistant', content: reply });
-                statusEl.textContent = 'Đã phản hồi';
-                sendToTelegram("🤖: " + reply);
-                return;
-          }
-
-          try {
-                const model = modelSelect.value;
-                const res = await puter.ai.chat(text, { model });
-
-                let reply = res.text || res.message?.content || res.toString();
-
-                const botDiv = addMessage('bot', "", true);
-                typeWriter(reply, botDiv, 30);
-                history.push({ role: 'assistant', content: reply });
-                statusEl.textContent = 'Đã xong';
-
-                // 🔹 Gửi câu trả lời về Telegram
-                sendToTelegram("🤖: " + reply);
-
-                if (enableTTS.checked) {
-                      try {
-                            const audio = await puter.ai.txt2speech(reply, {
-                                  language: 'vi-VN',
-                                  engine: 'neural'
-                            });
-                            if (audio && typeof audio.play === 'function') {
-                                  audio.play();
-                            } else if (audio?.url) {
-                                  new Audio(audio.url).play();
-                            }
-                      } catch (e) {
-                            console.warn('TTS lỗi', e);
-                      }
-                }
-
-          } catch (err) {
-                console.error(err);
-                addMessage('bot', '⚠️ Lỗi API: ' + (err.message || String(err)));
-                statusEl.textContent = 'Lỗi';
-          }
+    // 🔹 Block chat
+    function blockMessages() {
+      blocked = true;
+      const unblockAt = Date.now() + BLOCK_TIME;
+      localStorage.setItem("blockUntil", unblockAt);
+      statusEl.textContent = "⛔ Bạn đã gửi quá 10 tin nhắn, chờ 5 phút để tiếp tục!";
+      startCountdown(Math.floor(BLOCK_TIME / 1000));
     }
+
+    // 🔹 Countdown
+    function startCountdown(remaining) {
+      const btn = document.createElement("button");
+      btn.disabled = true;
+      btn.style.padding = "8px 12px";
+      btn.style.borderRadius = "6px";
+      btn.style.marginTop = "10px";
+      limitArea.innerHTML = "";
+      limitArea.appendChild(btn);
+
+      btn.textContent = `⏳ Chờ ${formatTime(remaining)}`;
+      countdownInterval = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          btn.textContent = `⏳ Chờ ${formatTime(remaining)}`;
+        } else {
+          clearInterval(countdownInterval);
+          limitArea.innerHTML = "";
+          blocked = false;
+          messageCount = 0;
+          localStorage.removeItem("blockUntil");
+          localStorage.setItem("messageCount", "0");
+          statusEl.textContent = "✅ Bạn có thể chat lại!";
+        }
+      }, 1000);
+    }
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m}:${s.toString().padStart(2, "0")}`;
+    }
+
+    // 🔹 Gửi tin nhắn
+    async function sendMessage() {
+      if (blocked) return;
+
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      // Tăng số tin nhắn
+      messageCount++;
+      localStorage.setItem("messageCount", messageCount);
+      if (messageCount > MAX_MESSAGES) {
+        blockMessages();
+        return;
+      }
+
+      sendToTelegram("👤: " + text);
+      addMessage('user', text);
+      history.push({ role: 'user', content: text });
+      localStorage.setItem("chatHistory", JSON.stringify(history));
+
+      inputEl.value = '';
+      statusEl.textContent = 'Đang xử lý...';
+
+      const lowerText = text.toLowerCase();
+
+      // 🔹 Kiểm tra từ cấm
+      if (badWords.some(w => lowerText.includes(w))) {
+        const warning = getRandomWarning();
+        const botDiv = addMessage('bot', "", true);
+        typeWriter(warning, botDiv, 30);
+        history.push({ role: 'assistant', content: warning });
+        localStorage.setItem("chatHistory", JSON.stringify(history));
+        statusEl.textContent = 'Đã phản hồi';
+        return;
+      }
+
+      // 🔹 Kiểm tra câu hỏi "ai tạo ra bạn"
+      const creatorQuestions = ["ai tạo ra bạn","ai là người tạo ra bạn","ai làm ra bạn","người tạo ra bạn","ai code bạn","ai viết ra bạn","ai tạo ra mày","ai code mày","ai viết ra mày"];
+      if (creatorQuestions.some(q => lowerText.includes(q))) {
+        const reply = "[QDev × puter] như tiêu đề. Tôi được tạo ra dựa trên các model Open AI có từ các phiên bản cũ nhưng tối ưu hơn!";
+        const botDiv = addMessage('bot', "", true);
+        typeWriter(reply, botDiv, 30);
+        history.push({ role: 'assistant', content: reply });
+        localStorage.setItem("chatHistory", JSON.stringify(history));
+        statusEl.textContent = 'Đã phản hồi';
+        sendToTelegram("🤖: " + reply);
+        return;
+      }
+
+      try {
+        const model = modelSelect.value;
+        const res = await puter.ai.chat(text, { model });
+        let reply = res.text || res.message?.content || res.toString();
+
+        const botDiv = addMessage('bot', "", true);
+        typeWriter(reply, botDiv, 30);
+        history.push({ role: 'assistant', content: reply });
+        localStorage.setItem("chatHistory", JSON.stringify(history));
+        statusEl.textContent = 'Đã xong';
+
+        sendToTelegram("🤖: " + reply);
+
+        if (enableTTS.checked) {
+          try {
+            const audio = await puter.ai.txt2speech(reply, { language: 'vi-VN', engine: 'neural' });
+            if (audio && typeof audio.play === 'function') audio.play();
+            else if (audio?.url) new Audio(audio.url).play();
+          } catch (e) { console.warn('TTS lỗi', e); }
+        }
+
+      } catch (err) {
+        console.error(err);
+        addMessage('bot', '⚠️ Lỗi API: ' + (err.message || String(err)));
+        statusEl.textContent = 'Lỗi';
+      }
+    }
+
+    // 🔹 Khi load lại web
+    window.onload = function() {
+      renderHistory();
+
+      const blockUntil = localStorage.getItem("blockUntil");
+      if (blockUntil && Date.now() < blockUntil) {
+        const remaining = Math.floor((blockUntil - Date.now()) / 1000);
+        blocked = true;
+        startCountdown(remaining);
+      }
+    };
   </script>
 </body>
 </html>
