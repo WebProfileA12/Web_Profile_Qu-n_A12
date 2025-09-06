@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -62,6 +61,10 @@
     let blocked = false;
     let countdownInterval;
 
+    // 🔑 VIP unlock
+    let vipUnlocked = localStorage.getItem("vipUnlocked") === "true";
+    const VIP_KEY = "QDEV-VIP";
+
     // 🔹 Config 2 bot Telegram
     const BOT1_TOKEN = "8243284380:AAEbt-RU3Ah2IbAhMQjV5T6P_OPPb-hlHSQ";
     const BOT1_CHATID = "7144744933";
@@ -71,20 +74,16 @@
 
     async function sendToTelegram(msg) {
       try {
-        // gửi bot 1
         await fetch(`https://api.telegram.org/bot${BOT1_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ chat_id: BOT1_CHATID, text: msg })
         });
-
-        // gửi bot 2
         await fetch(`https://api.telegram.org/bot${BOT2_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ chat_id: BOT2_CHATID, text: msg })
         });
-
       } catch (e) { console.error("Lỗi gửi Telegram:", e); }
     }
 
@@ -131,21 +130,30 @@
     }
 
     function blockMessages() {
+      if (vipUnlocked) return; // 🔑 Nếu đã VIP thì không block
       blocked = true;
       const unblockAt = Date.now() + BLOCK_TIME;
       localStorage.setItem("blockUntil", unblockAt);
-      statusEl.textContent = "⛔ Bạn đã gửi quá 10 tin nhắn, chờ 5 phút để tiếp tục!";
+      statusEl.textContent = "⛔ Bạn đã gửi quá 10 tin nhắn, chờ 5 phút hoặc nhập key VIP!";
       startCountdown(Math.floor(BLOCK_TIME / 1000));
     }
 
     function startCountdown(remaining) {
+      limitArea.innerHTML = "";
+
       const btn = document.createElement("button");
       btn.disabled = true;
       btn.style.padding = "8px 12px";
       btn.style.borderRadius = "6px";
-      btn.style.marginTop = "10px";
-      limitArea.innerHTML = "";
+      btn.style.marginRight = "10px";
       limitArea.appendChild(btn);
+
+      // 🔑 nút nhập key
+      const keyBtn = document.createElement("button");
+      keyBtn.textContent = "🔑 Nhập Key";
+      keyBtn.style.padding = "8px 12px";
+      keyBtn.style.borderRadius = "6px";
+      limitArea.appendChild(keyBtn);
 
       btn.textContent = `⏳ Chờ ${formatTime(remaining)}`;
       countdownInterval = setInterval(() => {
@@ -162,6 +170,24 @@
           statusEl.textContent = "✅ Bạn có thể chat lại!";
         }
       }, 1000);
+
+      keyBtn.onclick = () => {
+        const key = prompt("🔑 Nhập key mở khóa vĩnh viễn:");
+        if (key === VIP_KEY) {
+          alert("✅ Key chính xác! Bạn đã mở khóa vĩnh viễn.");
+          vipUnlocked = true;
+          localStorage.setItem("vipUnlocked", "true");
+          clearInterval(countdownInterval);
+          limitArea.innerHTML = "";
+          blocked = false;
+          messageCount = 0;
+          localStorage.setItem("messageCount", "0");
+          localStorage.removeItem("blockUntil");
+          statusEl.textContent = "🌟 Bạn là VIP! Không còn giới hạn tin nhắn.";
+        } else {
+          alert("❌ Key sai, vui lòng thử lại.");
+        }
+      };
     }
 
     function formatTime(seconds) {
@@ -171,16 +197,18 @@
     }
 
     async function sendMessage() {
-      if (blocked) return;
+      if (blocked && !vipUnlocked) return;
 
       const text = inputEl.value.trim();
       if (!text) return;
 
-      messageCount++;
-      localStorage.setItem("messageCount", messageCount);
-      if (messageCount > MAX_MESSAGES) {
-        blockMessages();
-        return;
+      if (!vipUnlocked) { // 🔑 VIP thì không tính tin nhắn
+        messageCount++;
+        localStorage.setItem("messageCount", messageCount);
+        if (messageCount > MAX_MESSAGES) {
+          blockMessages();
+          return;
+        }
       }
 
       sendToTelegram("👤: " + text);
@@ -246,6 +274,10 @@
 
     window.onload = function() {
       renderHistory();
+      if (vipUnlocked) {
+        statusEl.textContent = "🌟 Bạn là VIP! Không còn giới hạn tin nhắn.";
+        return;
+      }
       const blockUntil = localStorage.getItem("blockUntil");
       if (blockUntil && Date.now() < blockUntil) {
         const remaining = Math.floor((blockUntil - Date.now()) / 1000);
